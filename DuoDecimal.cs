@@ -93,7 +93,13 @@ namespace UwpDuoDecimal
         /// <returns>有効な12進数表現であればTrue、そうでなければFalse</returns>
         public static bool IsValidDuoDecimal(string duoDecimalString)
         {
-            return true;
+            if () {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         /// <summary>
