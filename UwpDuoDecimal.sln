@@ -5,6 +5,7 @@ VisualStudioVersion = 17.14.36301.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UwpDuoDecimal", "UwpDuoDecimal.csproj", "{51878CB5-5ADE-462D-BE90-5725A58864C3}"
 EndProject
+
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestProject4", "..\UnitTestProject4\UnitTestProject4.csproj", "{015C981F-B3DF-4CD9-8D6F-4A91CF0D9CEC}"
 EndProject
 Global
