@@ -27,19 +27,18 @@ namespace UwpDuoDecimal
             this.InitializeComponent();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void toDecimal_Click(object sender, RoutedEventArgs e)
         {
-
+            int num = int.Parse(tBlockInput.Text);
+            DuoDecimal d=new DuoDecimal(num);
+            tBlockResult.Text = d.GetInt().ToString();
         }
 
         private void toDuoDecimal_Click(object sender, RoutedEventArgs e)
         {
-
+            int num = int.Parse(tBlockInput.Text);
+            DuoDecimal d = new DuoDecimal(num);
+            tBlockResult.Text = d.GetString();
         }
     }
 }

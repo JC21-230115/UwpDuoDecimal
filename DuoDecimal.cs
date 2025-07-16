@@ -1,26 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text; // StringBuilder を使う場合に備えて残しています。現在のSetDuoDecimalでは不要ですが、GetIntで使うかもしれません。
 
 namespace UwpDuoDecimal
 {
-    internal class DuoDecimal
+    public class DuoDecimal
     {
-        private string _value; // 12進数の値を保持
+        private string _value;
 
-        // プロパティ
         public string Value
         {
             get { return _value; }
             private set
             {
-                if (!IsValidDuoDecimal(value))
+                if (!IsValidDuoDecimalString(value))
                 {
                     throw new ArgumentException("無効な12進数文字列です。0-9, T, E のいずれかの文字で構成される1～2文字の文字列を入力してください。");
                 }
-                _value = value.ToUpper(); // 大文字に変換して保存
+
+                string processedValue = value.ToLower();
+
+                if (processedValue.Length == 2 && processedValue.StartsWith("0"))
+                {
+                    processedValue = processedValue.Substring(1);
+                }
+
+                _value = processedValue;
             }
         }
 
@@ -39,11 +43,11 @@ namespace UwpDuoDecimal
         /// <param name="intValue">10進数 (0～143)</param>
         public DuoDecimal(int intValue)
         {
-            if (intValue < 0 || intValue > 143) // 12進数2桁 (EE) は10進数で 11*12 + 11 = 132+11=143
+            if (intValue < 0 || intValue > 143)
             {
                 throw new ArgumentOutOfRangeException(nameof(intValue), "10進数の値は0から143の範囲で指定してください。");
             }
-            _value = IntToDuoDecimalString(intValue);
+            SetDuoDecimal(intValue);
         }
 
         /// <summary>
@@ -65,25 +69,60 @@ namespace UwpDuoDecimal
             {
                 throw new ArgumentOutOfRangeException(nameof(intValue), "10進数の値は0から143の範囲で指定してください。");
             }
-            _value = IntToDuoDecimalString(intValue);
+
+            string s = "";
+            if (intValue >= 12)
+            {
+                s += "0123456789TE"[intValue / 12];
+            }
+            s += "0123456789TE"[intValue % 12];
+
+            Value = s;
         }
 
         /// <summary>
         /// 現在の12進数値を文字列として取得します。
         /// </summary>
         /// <returns>12進数文字列</returns>
-        public string GetDuoDecimal()
+        public string GetString()
         {
             return _value;
         }
 
+
+        int GetDigitValue(char c)
+        {
+            if (c >= '0' && c <= '9')
+            {
+                return c - '0';
+            }
+            else if (c == 't')
+            {
+                return 10;
+            }
+            else
+            {
+                return 11;
+            }
+        }
         /// <summary>
         /// 現在の12進数値を10進数として取得します。
         /// </summary>
         /// <returns>10進数</returns>
         public int GetInt()
         {
-            return DuoDecimalStringToInt(_value);
+            int intValue = 0; ;
+
+
+            intValue += GetDigitValue(_value[0]);
+            if (_value.Length == 2)
+            {
+                intValue *=  12; 
+                intValue += GetDigitValue(_value[1]);
+            }
+
+            return intValue;
+        
         }
 
         /// <summary>
@@ -91,30 +130,30 @@ namespace UwpDuoDecimal
         /// </summary>
         /// <param name="duoDecimalString">検証する文字列</param>
         /// <returns>有効な12進数表現であればTrue、そうでなければFalse</returns>
-        public static bool IsValidDuoDecimal(string duoDecimalString)
+        public static bool IsValidDuoDecimalString(string duoDecimalString)
         {
+            if (string.IsNullOrEmpty(duoDecimalString))
+            {
+                return false;
+            }
+
+            if (duoDecimalString.Length > 2)
+            {
+                return false;
+            }
+
+            foreach (char c in duoDecimalString)
+            {
+                // '0'から'9'、または't'であるかをチェック
+                if (!((c >= '0' && c <= '9') || c == 't'))
+                {
+                    return false; // 無効な文字が含まれている
+                }
+            }
+
+            // すべてのチェックを通過した場合、有効
             return true;
-        }
 
-        /// <summary>
-        /// 10進数値を12進数文字列に変換します。
-        /// </summary>
-        /// <param name="value">10進数値</param>
-        /// <returns>12進数文字列</returns>
-        private static string IntToDuoDecimalString(int value)
-        {
-            return "0";
-        }
-
-        /// <summary>
-        /// 12進数文字列を10進数値に変換します。
-        /// </summary>
-        /// <param name="duoDecimalString">12進数文字列</param>
-        /// <returns>10進数値</returns>
-        private static int DuoDecimalStringToInt(string duoDecimalString)
-        {
-            throw new ArgumentException("無効な12進数文字が含まれています。");
-            //return 0;
         }
     }
 }
